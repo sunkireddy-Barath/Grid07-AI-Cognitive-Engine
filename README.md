@@ -60,71 +60,29 @@ python main.py
 
 ## Architecture Overview
 
-```text
-+--------------------------------------------------+
-|              GRID07 AI COGNITIVE ENGINE          |
-+--------------------------------------------------+
-|                                                  |
-|  INPUT: Social Media Post / Bot Schedule         |
-|                    |                             |
-|                    v                             |
-|  +----------------+                             |
-|  |   PHASE 1      |                             |
-|  |  Vector Router |                             |
-|  |                |                             |
-|  | Post → Embed   |                             |
-|  | Embed → FAISS  |                             |
-|  | FAISS → Cosine |                             |
-|  | Similarity     |                             |
-|  | Score > 0.3?   |                             |
-|  | YES → Route    |                             |
-|  |  to Bot A/B/C  |                             |
-|  +-------+--------+                             |
-|          |                                      |
-|          v                                      |
-|  +----------------+                             |
-|  |   PHASE 2      |                             |
-|  | LangGraph      |                             |
-|  | Content Engine |                             |
-|  |                |                             |
-|  | [START]        |                             |
-|  |    |           |                             |
-|  |    v           |                             |
-|  | [decide_search]|  LLM reads persona          |
-|  |    |           |  outputs search query       |
-|  |    v           |                             |
-|  | [web_search]   |  mock_searxng_search()      |
-|  |    |           |  returns news headline      |
-|  |    v           |                             |
-|  | [draft_post]   |  LLM writes 280-char tweet  |
-|  |    |           |  outputs strict JSON        |
-|  |    v           |                             |
-|  |  [END]         |                             |
-|  |                |                             |
-|  | Output:        |                             |
-|  | {"bot_id":..., |                             |
-|  |  "topic":...,  |                             |
-|  |  "post_content"|                             |
-|  |  :...}         |                             |
-|  +-------+--------+                             |
-|          |                                      |
-|          v                                      |
-|  +----------------+                             |
-|  |   PHASE 3      |                             |
-|  | RAG Combat     |                             |
-|  | Engine         |                             |
-|  |                |                             |
-|  | Thread History |                             |
-|  | → RAG Prompt   |                             |
-|  | → System Guard |                             |
-|  | → LLM Reply    |                             |
-|  | → Injection    |                             |
-|  |   Detected?    |                             |
-|  |   IGNORE IT    |                             |
-|  |   Keep Arguing |                             |
-|  +----------------+                             |
-|                                                  |
-+--------------------------------------------------+
+```mermaid
+graph TD
+    Input[Social Media Post / Bot Schedule] --> Phase1[<b>PHASE 1: Vector Router</b><br/>Post → Embed → FAISS<br/>Cosine Similarity Check]
+    
+    Phase1 -->|Score > 0.3| Phase2[<b>PHASE 2: LangGraph Content Engine</b>]
+    
+    subgraph Phase2_Graph [LangGraph Workflow]
+        direction TB
+        S2((START)) --> DS[decide_search<br/><i>LLM picks topic</i>]
+        DS --> WS[web_search<br/><i>mock_searxng_search</i>]
+        WS --> DP[draft_post<br/><i>Strict JSON Output</i>]
+        DP --> E2((END))
+    end
+    
+    Phase2 --> Phase3[<b>PHASE 3: RAG Combat Engine</b>]
+    
+    subgraph Phase3_Logic [Defense Mechanism]
+        direction TB
+        TH[Thread History] --> RP[RAG Prompt]
+        RP --> SG[System Guard]
+        SG --> LLM[LLM Reply]
+        LLM -->|Injection Attempt| IG[IGNORE & Keep Arguing]
+    end
 ```
 
 ---
