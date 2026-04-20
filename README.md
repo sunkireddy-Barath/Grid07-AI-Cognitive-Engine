@@ -20,15 +20,17 @@ A Python-based AI bot orchestration system that simulates autonomous social medi
 
 ## Project Structure
 
+```text
 grid07-ai-engine/
-├── phase1_router.py        # Vector similarity bot routing
-├── phase2_langgraph.py     # LangGraph autonomous content engine
-├── phase3_rag.py           # RAG debate engine + injection defense
-├── main.py                 # Runs all 3 phases + saves logs
-├── requirements.txt        # All dependencies
-├── .env.example            # API key placeholder
-├── execution_logs.md       # Console output proof
-└── README.md               # This file
+├── phase1_router.py     # Vector similarity bot routing
+├── phase2_langgraph.py  # LangGraph autonomous content engine
+├── phase3_rag.py        # RAG debate engine + injection defense
+├── main.py              # Runs all 3 phases + saves logs
+├── requirements.txt     # All dependencies
+├── .env.example         # API key placeholder
+├── execution_logs.md    # Console output proof
+└── README.md            # This file
+```
 
 ---
 
